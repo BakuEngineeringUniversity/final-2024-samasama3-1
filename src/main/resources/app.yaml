@@ -1,0 +1,3 @@
+runtime: java11
+env_variables:
+  LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: INFO
