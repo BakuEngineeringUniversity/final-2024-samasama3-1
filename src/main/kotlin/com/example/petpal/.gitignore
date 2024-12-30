@@ -1,0 +1,59 @@
+# Compiled source code
+/target/
+*.class
+
+# Logs
+*.log
+/logs/
+/*.log
+
+# Dependency directories
+/.mvn/
+/.idea/
+/.vscode/
+/.gradle/
+build/
+
+# Maven and Gradle
+*.iml
+*.war
+*.jar
+
+# IDE specific files
+*.project
+*.classpath
+*.settings/
+*.factorypath
+*.idea/
+*.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# Operating system files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Environment files
+.env
+*.env
+
+# Test results
+/test-output/
+
+# Miscellaneous
+*.log
+*.out
+*.pid
+
+# Application specific
+/application.properties
+/application.yml
+/secrets/
+/database-backup/

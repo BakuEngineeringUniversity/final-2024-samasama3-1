@@ -9,4 +9,3 @@ class PetPalApplication
 fun main(args: Array<String>) {
 	runApplication<PetPalApplication>(*args)
 }
-

@@ -1,25 +1,25 @@
-package com.example.petpal.entites
+package com.example.petpal.entities
 
-
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 
-@Table(name="pets")
 @Entity
+@Table(name = "pets")
 class PetEntity(
     @Column(nullable = false)
-    val name: String,
+    var name: String,
 
     @Column(nullable = false)
-    val type: String,
+    var type: String,
 
     @Column(nullable = false)
-    val sex: String,
+    var sex: String,
 
     @Column(nullable = false)
-    val age: Int,
+    var age: Int,
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    var user: UserEntity?=null,
-
-    ) : CommonEntity()
+    @JsonBackReference
+    var user: UserEntity? = null
+) : CommonEntity()

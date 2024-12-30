@@ -1,9 +1,10 @@
-package com.example.petpal.entites
+package com.example.petpal.entities
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 class UserEntity(
     @Column(nullable = false)
     var firstName: String,
@@ -24,6 +25,6 @@ class UserEntity(
     var address: String,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JsonManagedReference
     var pets: MutableList<PetEntity> = mutableListOf()
-
 ) : CommonEntity()
