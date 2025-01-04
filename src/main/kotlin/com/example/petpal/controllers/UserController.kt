@@ -2,7 +2,6 @@ package com.example.petpal.controllers
 
 import com.example.petpal.entities.UserEntity
 import com.example.petpal.services.UserService
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController

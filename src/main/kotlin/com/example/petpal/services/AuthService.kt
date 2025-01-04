@@ -6,10 +6,13 @@ import com.example.petpal.entities.PetEntity
 import com.example.petpal.entities.UserEntity
 import com.example.petpal.repositories.UserRepository
 import com.example.petpal.utils.JwtUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+
 
 @Service
 class AuthService(
@@ -17,9 +20,12 @@ class AuthService(
     private val authenticationManager: AuthenticationManager,
     private val jwtUtils: JwtUtils
 ) {
+    private val logger: Logger = LoggerFactory.getLogger(AuthService::class.java)
     private val passwordEncoder = BCryptPasswordEncoder()
 
     fun registerUser(registerUserDto: RegisterUserDto): String {
+        logger.info("Attempting to register user with email: ${registerUserDto.email}")
+
         val hashedPassword = passwordEncoder.encode(registerUserDto.password)
         val pet = PetEntity(
             name = registerUserDto.petName,
@@ -38,16 +44,23 @@ class AuthService(
         )
         pet.user = user
         userRepository.save(user)
+
+        logger.info("User registered successfully: ${user.email}")
         return "User and pet registered successfully."
     }
 
     fun loginUser(loginUserDto: LoginUserDto): String {
+        logger.info("Attempting login for email: ${loginUserDto.email}")
+
         val authentication = authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(
                 loginUserDto.email,
                 loginUserDto.password
             )
         )
-        return jwtUtils.generateToken(authentication.name)
+        val token = jwtUtils.generateToken(authentication.name)
+
+        logger.info("Login successful for email: ${loginUserDto.email}")
+        return token
     }
 }

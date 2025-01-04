@@ -23,11 +23,10 @@ build/
 *.project
 *.classpath
 *.settings/
-*.factorypath
-*.idea/
-*.vscode/
-*.sublime-project
-*.sublime-workspace
+/.idea/
+/.vscode/
+/.sublime-project
+/.sublime-workspace
 
 # Temporary files
 *.tmp
@@ -52,8 +51,8 @@ ehthumbs.db
 *.out
 *.pid
 
-# Application specific
+
 /application.properties
-/application.yml
+src/main/resources/application.yml
 /secrets/
 /database-backup/
