@@ -20,7 +20,6 @@ repositories {
 }
 
 dependencies {
-	implementation("org.slf4j:slf4j-api:1.7.36")
 	implementation(platform("org.springframework.boot:spring-boot-dependencies:3.4.0"))
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")

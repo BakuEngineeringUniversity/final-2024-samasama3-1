@@ -12,10 +12,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  logging:
-    level:
-      com.example.petpal: DEBUG
-      org.springframework: INFO
+
+logging:
+  level:
+    root: INFO
+    com.example.petpal: DEBUG
 
 server:
   port: 9090

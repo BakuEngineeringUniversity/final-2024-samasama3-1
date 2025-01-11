@@ -1,5 +1,6 @@
 package com.example.petpal.controllers
 
+import com.example.petpal.common.ApiResponse
 import com.example.petpal.dtos.LoginUserDto
 import com.example.petpal.dtos.RegisterUserDto
 import com.example.petpal.services.AuthService
@@ -10,14 +11,14 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/auth")
 class AuthController(private val authService: AuthService) {
     @PostMapping("/register")
-    fun registerUser(@RequestBody registerUserDto: RegisterUserDto): ResponseEntity<String> {
+    fun registerUser(@RequestBody registerUserDto: RegisterUserDto): ResponseEntity<ApiResponse<String>> {
         val message = authService.registerUser(registerUserDto)
-        return ResponseEntity.ok(message)
+        return ResponseEntity.ok(ApiResponse("success", message, "User registered successfully"))
     }
 
     @PostMapping("/login")
-    fun loginUser(@RequestBody loginUserDto: LoginUserDto): ResponseEntity<Map<String, String>> {
+    fun loginUser(@RequestBody loginUserDto: LoginUserDto): ResponseEntity<ApiResponse<Map<String, String>>> {
         val token = authService.loginUser(loginUserDto)
-        return ResponseEntity.ok(mapOf("token" to token))
+        return ResponseEntity.ok(ApiResponse("success", mapOf("token" to token), "User logged in successfully"))
     }
 }

@@ -1,5 +1,6 @@
 package com.example.petpal.entities
 
+import com.example.petpal.enums.Sex
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 
@@ -12,8 +13,9 @@ class PetEntity(
     @Column(nullable = false)
     var type: String,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var sex: String,
+    var sex: Sex,
 
     @Column(nullable = false)
     var age: Int,
