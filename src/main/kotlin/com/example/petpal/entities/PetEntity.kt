@@ -7,10 +7,10 @@ import jakarta.persistence.*
 @Entity
 @Table(name = "pets")
 class PetEntity(
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     var name: String,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     var type: String,
 
     @Enumerated(EnumType.STRING)

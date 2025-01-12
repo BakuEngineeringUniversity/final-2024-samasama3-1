@@ -19,7 +19,10 @@ class PetController(private val petService: PetService) {
     }
 
     @PostMapping("/user/{userId}")
-    fun createPet(@PathVariable userId: Long, @RequestBody petCreateDto: PetCreateDto): ResponseEntity<ApiResponse<PetEntity>> {
+    fun createPet(
+        @PathVariable userId: Long,
+        @RequestBody petCreateDto: PetCreateDto
+    ): ResponseEntity<ApiResponse<PetEntity>> {
         val newPet = petService.createPet(userId, petCreateDto)
         return ResponseEntity.ok(ApiResponse("success", newPet, "Pet created successfully"))
     }

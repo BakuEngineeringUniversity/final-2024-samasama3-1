@@ -39,14 +39,14 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { it.disable() }
-            .cors { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**",
-                    "/api/auth/**")
-                    .permitAll()
+                    "/api/auth/**",
+                    // Allow access to /api/users endpoints
+                ).permitAll()
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(
