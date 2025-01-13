@@ -15,10 +15,11 @@ class JwtUtils(
 ) {
     private val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
 
-    fun generateToken(email: String, role: String): String {
+    fun generateToken(email: String, role: String, userId: Long): String {
         return Jwts.builder()
             .setSubject(email)
-            .claim("role", role) // Add role as a claim
+            .claim("role", role)
+            .claim("id", userId)
             .setIssuedAt(Date())
             .setExpiration(Date(System.currentTimeMillis() + jwtExpirationMs))
             .signWith(key, SignatureAlgorithm.HS512)
@@ -27,15 +28,15 @@ class JwtUtils(
 
     fun validateToken(token: String): Boolean {
         return try {
-            Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-            true
+            val claims = getClaimsFromToken(token)
+            println("Token claims: $claims")
+            !claims.expiration.before(Date())
         } catch (e: Exception) {
+            println("Token validation failed: ${e.message}")
             false
         }
     }
+
 
     fun getEmailFromJwt(token: String): String {
         return getClaimsFromToken(token).subject
@@ -52,4 +53,10 @@ class JwtUtils(
             .parseClaimsJws(token)
             .body
     }
+
+    fun getIdFromJwt(token: String): Long {
+        val claims = getClaimsFromToken(token)
+        return (claims["id"] as Int).toLong()
+    }
+
 }

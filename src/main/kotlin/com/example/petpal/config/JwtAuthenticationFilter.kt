@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.web.filter.OncePerRequestFilter
-
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFilter() {
@@ -18,20 +17,31 @@ class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFi
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        if (request.requestURI.startsWith("/api/auth/")) {
-            filterChain.doFilter(request, response)
-            return
-        }
+        try {
+            val token = extractJwtFromRequest(request)
+            if (!token.isNullOrEmpty() && jwtUtils.validateToken(token)) {
+                val email = jwtUtils.getEmailFromJwt(token)
+                val role = jwtUtils.getRoleFromJwt(token)
+                val id = jwtUtils.getIdFromJwt(token) // Extract user ID
+                val authorities = listOf(SimpleGrantedAuthority("ROLE_$role"))
 
-        val token = extractJwtFromRequest(request)
-        if (!token.isNullOrEmpty() && jwtUtils.validateToken(token)) {
-            val email = jwtUtils.getEmailFromJwt(token)
-            val role = jwtUtils.getRoleFromJwt(token)
-            val authorities = listOf(SimpleGrantedAuthority("ROLE_$role"))
+                val customUserDetails = CustomUserDetails(
+                    id = id,
+                    email = email,
+                    _authorities = authorities
+                )
 
-            val authentication = UsernamePasswordAuthenticationToken(email, null, authorities)
-            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-            SecurityContextHolder.getContext().authentication = authentication
+                println("Authenticated user: $email with role: $role and ID: $id")
+
+                val authentication = UsernamePasswordAuthenticationToken(customUserDetails, null, authorities)
+                authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+                SecurityContextHolder.getContext().authentication = authentication
+            } else {
+                println("Invalid or missing JWT token")
+            }
+        } catch (e: Exception) {
+            println("Error in JwtAuthenticationFilter: ${e.message}")
+            e.printStackTrace()
         }
 
         filterChain.doFilter(request, response)
@@ -39,7 +49,13 @@ class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFi
 
     private fun extractJwtFromRequest(request: HttpServletRequest): String? {
         val bearerToken = request.getHeader("Authorization")
-        return bearerToken?.takeIf { it.startsWith("Bearer ") }?.substring(7)
+        println("Authorization Header: $bearerToken") // Debugging log
+        return if (!bearerToken.isNullOrEmpty() && bearerToken.startsWith("Bearer ")) {
+            bearerToken.substring(7) // Remove "Bearer " prefix
+        } else {
+            null
+        }
     }
-}
 
+
+}

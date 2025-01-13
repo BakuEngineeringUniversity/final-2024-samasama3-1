@@ -29,7 +29,7 @@ class PetController(private val petService: PetService) {
     }
 
     @PostMapping("/user")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     fun createPet(
         @RequestBody petCreateDto: PetCreateDto
     ): ResponseEntity<ApiResponse<PetEntity>> {
@@ -39,7 +39,7 @@ class PetController(private val petService: PetService) {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     fun updatePet(
         @PathVariable id: Long,
         @RequestBody petUpdateDto: PetUpdateDto
@@ -50,7 +50,7 @@ class PetController(private val petService: PetService) {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     fun deletePet(@PathVariable id: Long): ResponseEntity<ApiResponse<String>> {
         petService.deletePet(id, getCurrentUserId())
         return ResponseEntity.ok(ApiResponse("success", null, "Pet with ID $id deleted successfully"))

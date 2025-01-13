@@ -16,6 +16,4 @@ data class PetUpdateDto(
     @field:Max(100, message = "Age must not exceed 100")*/
     val age: Int?,
 
-    //@field:NotNull(message = "User ID is required")
-    val userId: Long?
 )

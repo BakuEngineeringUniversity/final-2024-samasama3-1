@@ -3,6 +3,7 @@ package com.example.petpal.config
 import com.example.petpal.utils.JwtUtils
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
@@ -42,6 +43,9 @@ class SecurityConfig(
                 it.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/api/auth/**").permitAll()
                 it.requestMatchers("/api/users/**").hasRole("ADMIN")
                 it.requestMatchers("/api/pets/user/{userId}").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.POST, "/api/pets/**").hasRole("USER")
+                it.requestMatchers(HttpMethod.PUT, "/api/pets/**").hasRole("USER")
+                it.requestMatchers(HttpMethod.DELETE, "/api/pets/**").hasRole("USER")
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(

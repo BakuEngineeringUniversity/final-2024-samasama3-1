@@ -14,17 +14,11 @@ class PetService(
     private val petRepository: PetRepository,
     private val userRepository: UserRepository
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(PetService::class.java)
-
     fun getPetsByUserId(userId: Long): List<PetEntity> {
-        logger.info("Fetching pets for user with ID: $userId")
-        return petRepository.findByUserId(userId).also {
-            logger.info("Found ${it.size} pets for user ID: $userId")
-        }
+        return petRepository.findByUserId(userId)
     }
 
     fun createPet(userId: Long, petCreateDto: PetCreateDto): PetEntity {
-        logger.info("Creating a new pet for user ID: $userId")
         val user = userRepository.findById(userId)
             .orElseThrow { IllegalArgumentException("User with ID $userId not found") }
 
@@ -35,7 +29,6 @@ class PetService(
             age = petCreateDto.age,
             user = user
         )
-        logger.info("Pet created: ${newPet.name} for user ID: $userId")
         return petRepository.save(newPet)
     }
 
@@ -43,10 +36,12 @@ class PetService(
         val existingPet = petRepository.findById(petId)
             .orElseThrow { IllegalArgumentException("Pet with ID $petId not found") }
 
+        // Validate ownership
         if (existingPet.user?.id != userId) {
             throw IllegalArgumentException("You are not the owner of this pet")
         }
 
+        // Update fields if provided
         petUpdateDto.name?.let { existingPet.name = it }
         petUpdateDto.type?.let { existingPet.type = it }
         petUpdateDto.sex.let { existingPet.sex = it }
@@ -56,15 +51,15 @@ class PetService(
     }
 
     fun deletePet(petId: Long, userId: Long) {
-        logger.info("Deleting pet with ID: $petId")
         val existingPet = petRepository.findById(petId)
             .orElseThrow { IllegalArgumentException("Pet with ID $petId not found") }
 
+        // Validate ownership
         if (existingPet.user?.id != userId) {
             throw IllegalArgumentException("You are not the owner of this pet")
         }
 
         petRepository.delete(existingPet)
-        logger.info("Pet deleted with ID: $petId")
     }
 }
+

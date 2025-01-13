@@ -54,17 +54,14 @@ class AuthService(
     fun loginUser(loginUserDto: LoginUserDto): String {
         logger.info("Attempting login for email: ${loginUserDto.email}")
 
-        // Authenticate using the provided email and password
         val user = userRepository.findByEmail(loginUserDto.email)
             ?: throw IllegalArgumentException("User not found with email: ${loginUserDto.email}")
 
-        // Validate the provided password against the stored hashed password
         if (!passwordEncoder.matches(loginUserDto.password, user.password)) {
             throw IllegalArgumentException("Invalid password")
         }
 
-        // Generate JWT token
-        val token = jwtUtils.generateToken(user.email, user.role.name)
+        val token = jwtUtils.generateToken(user.email, user.role.name, user.id)
 
         logger.info("Login successful for email: ${loginUserDto.email}")
         return token
