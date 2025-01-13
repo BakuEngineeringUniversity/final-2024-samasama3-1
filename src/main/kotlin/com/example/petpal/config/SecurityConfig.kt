@@ -40,13 +40,9 @@ class SecurityConfig(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers(
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/v3/api-docs/**",
-                    "/api/auth/**",
-                    // Allow access to /api/users endpoints
-                ).permitAll()
+                it.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/api/auth/**").permitAll()
+                it.requestMatchers("/api/users/**").hasRole("ADMIN")
+                it.requestMatchers("/api/pets/user/{userId}").hasRole("ADMIN")
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(

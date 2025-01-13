@@ -1,5 +1,6 @@
 package com.example.petpal.entities
 
+import com.example.petpal.enums.UserRoles
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import jakarta.validation.constraints.Email
@@ -32,6 +33,10 @@ class UserEntity(
     @Column(nullable = false)
     @Size(max = 100, message = "Address cannot exceed 100 characters")
     var address: String,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var role: UserRoles = UserRoles.USER,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     @JsonManagedReference
