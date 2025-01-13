@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.web.filter.OncePerRequestFilter
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+
 class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -19,7 +21,10 @@ class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFi
         val token = extractJwtFromRequest(request)
         if (!token.isNullOrEmpty() && jwtUtils.validateToken(token)) {
             val email = jwtUtils.getEmailFromJwt(token)
-            val authentication = UsernamePasswordAuthenticationToken(email, null, emptyList())
+            val role = jwtUtils.getRoleFromJwt(token)
+            val authorities = listOf(SimpleGrantedAuthority("ROLE_$role"))
+
+            val authentication = UsernamePasswordAuthenticationToken(email, null, authorities)
             authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
             SecurityContextHolder.getContext().authentication = authentication
         }

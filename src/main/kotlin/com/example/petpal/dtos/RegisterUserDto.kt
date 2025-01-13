@@ -1,6 +1,7 @@
 package com.example.petpal.dtos
 
 import com.example.petpal.enums.Sex
+import com.example.petpal.enums.UserRoles
 
 data class RegisterUserDto(
     /*@field:Email(message = "Email must be valid")*/
@@ -44,5 +45,7 @@ data class RegisterUserDto(
 
     /*@field:Min(0, message = "Pet age must be at least 0")
     @field:Max(100, message = "Pet age must not exceed 100")*/
-    val petAge: Int
+    val petAge: Int,
+
+    val role: UserRoles = UserRoles.USER
 )

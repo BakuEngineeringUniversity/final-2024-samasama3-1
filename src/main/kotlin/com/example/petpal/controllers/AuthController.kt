@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(private val authService: AuthService) {
+
     @PostMapping("/register")
     fun registerUser(@RequestBody registerUserDto: RegisterUserDto): ResponseEntity<ApiResponse<String>> {
         val message = authService.registerUser(registerUserDto)
@@ -17,8 +18,13 @@ class AuthController(private val authService: AuthService) {
     }
 
     @PostMapping("/login")
-    fun loginUser(@RequestBody loginUserDto: LoginUserDto): ResponseEntity<ApiResponse<Map<String, String>>> {
-        val token = authService.loginUser(loginUserDto)
-        return ResponseEntity.ok(ApiResponse("success", mapOf("token" to token), "User logged in successfully"))
+    fun loginUser(@RequestBody loginUserDto: LoginUserDto): ResponseEntity<ApiResponse<Map<String, Any>>> {
+        val tokenWithRole = authService.loginUser(loginUserDto)
+        val response = mapOf(
+            "token" to tokenWithRole,
+            "message" to "User logged in successfully"
+        )
+        return ResponseEntity.ok(ApiResponse("success", response, "User logged in successfully"))
     }
 }
+

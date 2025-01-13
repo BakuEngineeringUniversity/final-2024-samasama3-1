@@ -1,5 +1,6 @@
 package com.example.petpal.utils
 
+import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
@@ -14,9 +15,10 @@ class JwtUtils(
 ) {
     private val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
 
-    fun generateToken(username: String): String {
+    fun generateToken(email: String, role: String): String {
         return Jwts.builder()
-            .setSubject(username)
+            .setSubject(email)
+            .claim("role", role) // Add role as a claim
             .setIssuedAt(Date())
             .setExpiration(Date(System.currentTimeMillis() + jwtExpirationMs))
             .signWith(key, SignatureAlgorithm.HS512)
@@ -36,11 +38,18 @@ class JwtUtils(
     }
 
     fun getEmailFromJwt(token: String): String {
+        return getClaimsFromToken(token).subject
+    }
+
+    fun getRoleFromJwt(token: String): String {
+        return getClaimsFromToken(token).get("role", String::class.java)
+    }
+
+    private fun getClaimsFromToken(token: String): Claims {
         return Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
             .parseClaimsJws(token)
             .body
-            .subject
     }
 }
