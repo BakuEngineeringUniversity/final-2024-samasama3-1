@@ -1,14 +1,12 @@
-package com.example.petpal.services
+package com.example.petpal.config
 
 import com.example.petpal.entities.UserEntity
 import com.example.petpal.repositories.UserRepository
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.stereotype.Service
-
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.stereotype.Service
 
 @Service
 class CustomUserDetailsService(
@@ -19,12 +17,12 @@ class CustomUserDetailsService(
         val user: UserEntity = userRepository.findByEmail(email)
             ?: throw UsernameNotFoundException("User not found with email: $email")
 
-        val authorities = listOf(SimpleGrantedAuthority("ROLE_${user.role.name}")) // Map roles to authorities
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_${user.role.name}"))
 
-        return User(
-            user.email,
-            user.password,
-            authorities
+        return CustomUserDetails(
+            id = user.id,
+            email = user.email,
+            _authorities = authorities
         )
     }
 }

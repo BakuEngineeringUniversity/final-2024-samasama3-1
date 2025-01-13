@@ -18,6 +18,11 @@ class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFi
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        if (request.requestURI.startsWith("/api/auth/")) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val token = extractJwtFromRequest(request)
         if (!token.isNullOrEmpty() && jwtUtils.validateToken(token)) {
             val email = jwtUtils.getEmailFromJwt(token)
@@ -28,6 +33,7 @@ class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFi
             authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
             SecurityContextHolder.getContext().authentication = authentication
         }
+
         filterChain.doFilter(request, response)
     }
 
@@ -36,3 +42,4 @@ class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFi
         return bearerToken?.takeIf { it.startsWith("Bearer ") }?.substring(7)
     }
 }
+

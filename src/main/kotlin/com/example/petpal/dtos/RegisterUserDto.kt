@@ -2,6 +2,7 @@ package com.example.petpal.dtos
 
 import com.example.petpal.enums.Sex
 import com.example.petpal.enums.UserRoles
+import io.swagger.v3.oas.annotations.media.Schema
 
 data class RegisterUserDto(
     /*@field:Email(message = "Email must be valid")*/
@@ -47,5 +48,5 @@ data class RegisterUserDto(
     @field:Max(100, message = "Pet age must not exceed 100")*/
     val petAge: Int,
 
-    val role: UserRoles = UserRoles.USER
+    val role: UserRoles
 )

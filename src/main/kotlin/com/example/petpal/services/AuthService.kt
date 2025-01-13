@@ -4,7 +4,6 @@ import com.example.petpal.dtos.LoginUserDto
 import com.example.petpal.dtos.RegisterUserDto
 import com.example.petpal.entities.PetEntity
 import com.example.petpal.entities.UserEntity
-import com.example.petpal.enums.UserRoles
 import com.example.petpal.repositories.UserRepository
 import com.example.petpal.utils.JwtUtils
 import org.slf4j.Logger
@@ -43,7 +42,7 @@ class AuthService(
             phoneNumber = registerUserDto.phoneNumber,
             address = registerUserDto.address,
             pets = mutableListOf(pet),
-            role = UserRoles.USER
+            role = registerUserDto.role
         )
         pet.user = user
         userRepository.save(user)
@@ -55,19 +54,20 @@ class AuthService(
     fun loginUser(loginUserDto: LoginUserDto): String {
         logger.info("Attempting login for email: ${loginUserDto.email}")
 
-        val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(
-                loginUserDto.email,
-                loginUserDto.password
-            )
-        )
-
+        // Authenticate using the provided email and password
         val user = userRepository.findByEmail(loginUserDto.email)
             ?: throw IllegalArgumentException("User not found with email: ${loginUserDto.email}")
 
+        // Validate the provided password against the stored hashed password
+        if (!passwordEncoder.matches(loginUserDto.password, user.password)) {
+            throw IllegalArgumentException("Invalid password")
+        }
+
+        // Generate JWT token
         val token = jwtUtils.generateToken(user.email, user.role.name)
 
         logger.info("Login successful for email: ${loginUserDto.email}")
         return token
     }
+
 }

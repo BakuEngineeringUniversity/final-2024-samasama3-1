@@ -1,6 +1,5 @@
 package com.example.petpal.config
 
-import com.example.petpal.services.CustomUserDetailsService
 import com.example.petpal.utils.JwtUtils
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

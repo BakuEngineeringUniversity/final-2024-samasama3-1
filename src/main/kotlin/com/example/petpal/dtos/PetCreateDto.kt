@@ -17,4 +17,7 @@ data class PetCreateDto(
     /*@field:Min(0, message = "Age must be at least 0")
     @field:Max(100, message = "Age must not exceed 100")*/
     val age: Int,
+
+    //@field:NotNull(message = "User ID is required")
+    val userId: Long
 )

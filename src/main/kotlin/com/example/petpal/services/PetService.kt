@@ -25,7 +25,6 @@ class PetService(
 
     fun createPet(userId: Long, petCreateDto: PetCreateDto): PetEntity {
         logger.info("Creating a new pet for user ID: $userId")
-
         val user = userRepository.findById(userId)
             .orElseThrow { IllegalArgumentException("User with ID $userId not found") }
 
@@ -40,26 +39,31 @@ class PetService(
         return petRepository.save(newPet)
     }
 
-    fun updatePet(petId: Long, petUpdateDto: PetUpdateDto): PetEntity {
-        logger.info("Updating pet with ID: $petId")
-
+    fun updatePet(petId: Long, petUpdateDto: PetUpdateDto, userId: Long): PetEntity {
         val existingPet = petRepository.findById(petId)
             .orElseThrow { IllegalArgumentException("Pet with ID $petId not found") }
+
+        if (existingPet.user?.id != userId) {
+            throw IllegalArgumentException("You are not the owner of this pet")
+        }
 
         petUpdateDto.name?.let { existingPet.name = it }
         petUpdateDto.type?.let { existingPet.type = it }
-        petUpdateDto.sex?.let { existingPet.sex = it }
+        petUpdateDto.sex.let { existingPet.sex = it }
         petUpdateDto.age?.let { existingPet.age = it }
 
-        logger.info("Pet updated: ${existingPet.name} with ID: $petId")
         return petRepository.save(existingPet)
     }
 
-    fun deletePet(petId: Long) {
+    fun deletePet(petId: Long, userId: Long) {
         logger.info("Deleting pet with ID: $petId")
-
         val existingPet = petRepository.findById(petId)
             .orElseThrow { IllegalArgumentException("Pet with ID $petId not found") }
+
+        if (existingPet.user?.id != userId) {
+            throw IllegalArgumentException("You are not the owner of this pet")
+        }
+
         petRepository.delete(existingPet)
         logger.info("Pet deleted with ID: $petId")
     }
