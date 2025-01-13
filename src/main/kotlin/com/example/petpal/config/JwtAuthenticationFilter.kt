@@ -22,7 +22,7 @@ class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFi
             if (!token.isNullOrEmpty() && jwtUtils.validateToken(token)) {
                 val email = jwtUtils.getEmailFromJwt(token)
                 val role = jwtUtils.getRoleFromJwt(token)
-                val id = jwtUtils.getIdFromJwt(token) // Extract user ID
+                val id = jwtUtils.getIdFromJwt(token)
                 val authorities = listOf(SimpleGrantedAuthority("ROLE_$role"))
 
                 val customUserDetails = CustomUserDetails(
@@ -49,9 +49,9 @@ class JwtAuthenticationFilter(private val jwtUtils: JwtUtils) : OncePerRequestFi
 
     private fun extractJwtFromRequest(request: HttpServletRequest): String? {
         val bearerToken = request.getHeader("Authorization")
-        println("Authorization Header: $bearerToken") // Debugging log
+        println("Authorization Header: $bearerToken")
         return if (!bearerToken.isNullOrEmpty() && bearerToken.startsWith("Bearer ")) {
-            bearerToken.substring(7) // Remove "Bearer " prefix
+            bearerToken.substring(7)
         } else {
             null
         }
