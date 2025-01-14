@@ -13,15 +13,14 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-custom:
-  logging-path: C:/Users/hp/IdeaProjects/PetPalLogs
 
 logging:
   file:
-    name: ${custom.logging-path}/petpal.log
+    name: ./logs/petpal.log
   level:
     root: INFO
     com.example.petpal: DEBUG
+
 
 server:
   port: 9090
