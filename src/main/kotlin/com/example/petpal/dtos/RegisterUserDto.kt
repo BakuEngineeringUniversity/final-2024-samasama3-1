@@ -48,5 +48,4 @@ data class RegisterUserDto(
     @field:Max(100, message = "Pet age must not exceed 100")*/
     val petAge: Int,
 
-    val role: UserRoles
 )

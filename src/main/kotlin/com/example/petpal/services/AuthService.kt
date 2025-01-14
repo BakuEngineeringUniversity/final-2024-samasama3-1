@@ -2,22 +2,20 @@ package com.example.petpal.services
 
 import com.example.petpal.dtos.LoginUserDto
 import com.example.petpal.dtos.RegisterUserDto
+import com.example.petpal.dtos.RegisterAdminDto
 import com.example.petpal.entities.PetEntity
 import com.example.petpal.entities.UserEntity
+import com.example.petpal.enums.UserRoles
 import com.example.petpal.repositories.UserRepository
 import com.example.petpal.utils.JwtUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-
 
 @Service
 class AuthService(
     private val userRepository: UserRepository,
-    private val authenticationManager: AuthenticationManager,
     private val jwtUtils: JwtUtils
 ) {
     private val logger: Logger = LoggerFactory.getLogger(AuthService::class.java)
@@ -42,7 +40,7 @@ class AuthService(
             phoneNumber = registerUserDto.phoneNumber,
             address = registerUserDto.address,
             pets = mutableListOf(pet),
-            role = registerUserDto.role
+            role = UserRoles.USER
         )
         pet.user = user
         userRepository.save(user)
@@ -67,4 +65,25 @@ class AuthService(
         return token
     }
 
+    fun registerAdmin(registerAdminDto: RegisterAdminDto): String {
+        logger.info("Attempting to register admin with email: ${registerAdminDto.email}")
+
+        val hashedPassword = passwordEncoder.encode(registerAdminDto.password)
+
+        val admin = UserEntity(
+            firstName = registerAdminDto.firstName,
+            lastName = registerAdminDto.surname,
+            email = registerAdminDto.email,
+            password = hashedPassword,
+            phoneNumber = registerAdminDto.phoneNumber,
+            address = registerAdminDto.address,
+            role = UserRoles.ADMIN,
+            pets = mutableListOf()
+        )
+
+        userRepository.save(admin)
+
+        logger.info("Admin registered successfully: ${admin.email}")
+        return "Admin registered successfully."
+    }
 }

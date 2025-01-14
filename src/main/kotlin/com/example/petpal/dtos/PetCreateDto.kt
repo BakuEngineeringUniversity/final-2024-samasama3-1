@@ -1,5 +1,7 @@
 package com.example.petpal.dtos
 
+
+import jakarta.validation.constraints.*
 import com.example.petpal.enums.Sex
 
 data class PetCreateDto(
