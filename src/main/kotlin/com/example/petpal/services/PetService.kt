@@ -4,6 +4,8 @@ import com.example.petpal.dtos.PetCreateDto
 import com.example.petpal.dtos.PetUpdateDto
 import com.example.petpal.entities.PetEntity
 import com.example.petpal.enums.UserRoles
+import com.example.petpal.exceptions.InvalidPetOwnershipException
+import com.example.petpal.exceptions.PetNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import com.example.petpal.repositories.PetRepository
@@ -20,7 +22,12 @@ class PetService(
 
     fun getPetsByUserId(userId: Long): List<PetEntity> {
         logger.info("Fetching pets for user with ID: $userId")
-        return petRepository.findByUserId(userId)
+        val pets = petRepository.findByUserId(userId)
+        if (pets.isEmpty()) {
+            logger.error("No pets found for user with ID: $userId")
+            throw PetNotFoundException("No pets found for user with ID: $userId")
+        }
+        return pets
     }
 
     fun createPet(userId: Long, petCreateDto: PetCreateDto): PetEntity {
@@ -41,13 +48,12 @@ class PetService(
 
     fun updatePet(petId: Long, petUpdateDto: PetUpdateDto, userId: Long): PetEntity {
         val existingPet = petRepository.findById(petId)
-            .orElseThrow { IllegalArgumentException("Pet with ID $petId not found") }
+            .orElseThrow { PetNotFoundException("Pet with ID $petId not found") }
 
         if (existingPet.user?.id != userId && !isAdmin(userId)) {
-            throw IllegalArgumentException("You are not the owner of this pet")
+            throw InvalidPetOwnershipException("You are not the owner of this pet")
         }
 
-        // Update pet fields
         petUpdateDto.name?.let { existingPet.name = it }
         petUpdateDto.type?.let { existingPet.type = it }
         petUpdateDto.sex.let { existingPet.sex = it }
@@ -59,10 +65,10 @@ class PetService(
 
     fun deletePet(petId: Long, userId: Long) {
         val existingPet = petRepository.findById(petId)
-            .orElseThrow { IllegalArgumentException("Pet with ID $petId not found") }
+            .orElseThrow { PetNotFoundException("Pet with ID $petId not found") }
 
         if (existingPet.user?.id != userId && !isAdmin(userId)) {
-            throw IllegalArgumentException("You are not the owner of this pet")
+            throw InvalidPetOwnershipException("You are not the owner of this pet")
         }
 
         logger.info("Deleting pet with ID: $petId")
@@ -73,5 +79,4 @@ class PetService(
         val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
         return user.role == UserRoles.ADMIN
     }
-
 }

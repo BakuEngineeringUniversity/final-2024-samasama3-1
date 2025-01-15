@@ -5,6 +5,8 @@ import com.example.petpal.config.CustomUserDetails
 import com.example.petpal.dtos.PetCreateDto
 import com.example.petpal.dtos.PetUpdateDto
 import com.example.petpal.entities.PetEntity
+import com.example.petpal.exceptions.InvalidPetOwnershipException
+import com.example.petpal.exceptions.PetNotFoundException
 import com.example.petpal.services.PetService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -29,8 +31,13 @@ class PetController(private val petService: PetService) {
     @PreAuthorize("hasRole('ADMIN')")
     fun getPetsByUser(@PathVariable userId: Long): ResponseEntity<ApiResponse<List<PetEntity>>> {
         logger.info("Admin is fetching pets for user with ID: $userId")
-        val pets = petService.getPetsByUserId(userId)
-        return ResponseEntity.ok(ApiResponse("success", pets, "Pets retrieved successfully"))
+        return try {
+            val pets = petService.getPetsByUserId(userId)
+            ResponseEntity.ok(ApiResponse("success", "Pets retrieved successfully", pets))
+        } catch (e: PetNotFoundException) {
+            logger.error("Error fetching pets for user ID: $userId", e)
+            throw e
+        }
     }
 
     @PostMapping("/user")
@@ -38,8 +45,13 @@ class PetController(private val petService: PetService) {
     fun createPet(@RequestBody petCreateDto: PetCreateDto): ResponseEntity<ApiResponse<PetEntity>> {
         val userId = getCurrentUserId()
         logger.info("User with ID $userId is creating a new pet: ${petCreateDto.name}")
-        val newPet = petService.createPet(userId, petCreateDto)
-        return ResponseEntity.ok(ApiResponse("success", newPet, "Pet created successfully"))
+        return try {
+            val newPet = petService.createPet(userId, petCreateDto)
+            ResponseEntity.ok(ApiResponse("success", "Pet created successfully", newPet))
+        } catch (e: Exception) {
+            logger.error("Error creating pet for user ID: $userId", e)
+            throw e
+        }
     }
 
     @PutMapping("/{id}")
@@ -47,8 +59,19 @@ class PetController(private val petService: PetService) {
     fun updatePet(@PathVariable id: Long, @RequestBody petUpdateDto: PetUpdateDto): ResponseEntity<ApiResponse<PetEntity>> {
         val currentUserId = getCurrentUserId()
         logger.info("User with ID $currentUserId is updating pet with ID $id")
-        val updatedPet = petService.updatePet(id, petUpdateDto, currentUserId)
-        return ResponseEntity.ok(ApiResponse("success", updatedPet, "Pet updated successfully"))
+        return try {
+            val updatedPet = petService.updatePet(id, petUpdateDto, currentUserId)
+            ResponseEntity.ok(ApiResponse("success", "Pet updated successfully", updatedPet))
+        } catch (e: InvalidPetOwnershipException) {
+            logger.error("User with ID $currentUserId does not own pet with ID $id", e)
+            throw e
+        } catch (e: PetNotFoundException) {
+            logger.error("Pet with ID $id not found", e)
+            throw e
+        } catch (e: Exception) {
+            logger.error("Error updating pet with ID: $id", e)
+            throw e
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -56,7 +79,15 @@ class PetController(private val petService: PetService) {
     fun deletePet(@PathVariable id: Long): ResponseEntity<ApiResponse<String>> {
         val currentUserId = getCurrentUserId()
         logger.info("User with ID $currentUserId is deleting pet with ID $id")
-        petService.deletePet(id, currentUserId)
-        return ResponseEntity.ok(ApiResponse("success", null, "Pet with ID $id deleted successfully"))
+        return try {
+            petService.deletePet(id, currentUserId)
+            ResponseEntity.ok(ApiResponse("success", "Pet with ID $id deleted successfully", null))
+        } catch (e: InvalidPetOwnershipException) {
+            logger.error("User with ID $currentUserId does not own pet with ID $id", e)
+            throw e
+        } catch (e: PetNotFoundException) {
+            logger.error("Pet with ID $id not found", e)
+            throw e
+        }
     }
 }
