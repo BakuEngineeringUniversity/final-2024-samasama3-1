@@ -4,6 +4,7 @@ import com.example.petpal.enums.Sex
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 
+
 @Entity
 @Table(name = "pets")
 class PetEntity(
@@ -23,5 +24,6 @@ class PetEntity(
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
-    var user: UserEntity? = null
+    var user: UserEntity? = null,
+
 ) : CommonEntity()

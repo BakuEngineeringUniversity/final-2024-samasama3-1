@@ -26,3 +26,17 @@ server:
 jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000
+
+pagination:
+  default-page: 0
+  default-size: 7
+
+custom-admin:
+  first-name: Super
+  last-name: Admin
+  email: superadmin@example.com
+  password: Superadmin123
+  phone-number: "+1234567890"
+  address: "123 Street"
+  role: SUPER_ADMIN
+

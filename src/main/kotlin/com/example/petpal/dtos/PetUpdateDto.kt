@@ -2,6 +2,7 @@ package com.example.petpal.dtos
 
 import jakarta.validation.constraints.*
 import com.example.petpal.enums.Sex
+import org.springframework.web.multipart.MultipartFile
 
 data class PetUpdateDto(
     /*@field:Size(max = 50, message = "Pet name cannot exceed 50 characters")*/
@@ -16,5 +17,6 @@ data class PetUpdateDto(
     /*@field:Min(0, message = "Age must be at least 0")
     @field:Max(100, message = "Age must not exceed 100")*/
     val age: Int?,
+
 
 )

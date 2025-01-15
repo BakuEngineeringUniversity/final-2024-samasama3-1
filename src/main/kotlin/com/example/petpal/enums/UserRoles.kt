@@ -2,5 +2,6 @@ package com.example.petpal.enums
 
 enum class UserRoles {
     ADMIN,
-    USER
+    USER,
+    SUPER_ADMIN
 }

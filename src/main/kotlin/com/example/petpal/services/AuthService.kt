@@ -68,6 +68,11 @@ class AuthService(
     fun registerAdmin(registerAdminDto: RegisterAdminDto): String {
         logger.info("Attempting to register admin with email: ${registerAdminDto.email}")
 
+        // Check if an admin with the same email already exists
+        if (userRepository.findByEmail(registerAdminDto.email) != null) {
+            throw IllegalArgumentException("Admin with email ${registerAdminDto.email} already exists.")
+        }
+
         val hashedPassword = passwordEncoder.encode(registerAdminDto.password)
 
         val admin = UserEntity(
@@ -77,7 +82,7 @@ class AuthService(
             password = hashedPassword,
             phoneNumber = registerAdminDto.phoneNumber,
             address = registerAdminDto.address,
-            role = UserRoles.ADMIN,
+            role = UserRoles.ADMIN, // Role is always ADMIN
             pets = mutableListOf()
         )
 
@@ -85,5 +90,9 @@ class AuthService(
 
         logger.info("Admin registered successfully: ${admin.email}")
         return "Admin registered successfully."
+    }
+
+    fun isAdminExists(email: String): Boolean {
+        return userRepository.findByEmail(email) != null
     }
 }

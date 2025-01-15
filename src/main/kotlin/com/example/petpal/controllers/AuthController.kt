@@ -38,7 +38,7 @@ class AuthController(private val authService: AuthService) {
         return ResponseEntity.ok(ApiResponse("success", response, "User logged in successfully"))
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @PostMapping("/register-admin")
     fun registerAdmin(@Valid @RequestBody registerAdminDto: RegisterAdminDto): ResponseEntity<ApiResponse<String>> {
         logger.info("Attempting to register new admin with email: ${registerAdminDto.email}")

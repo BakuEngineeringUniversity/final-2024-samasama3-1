@@ -3,6 +3,7 @@ package com.example.petpal.dtos
 
 import jakarta.validation.constraints.*
 import com.example.petpal.enums.Sex
+import org.springframework.web.multipart.MultipartFile
 
 data class PetCreateDto(
     /*@field:NotBlank(message = "Pet name is required")
